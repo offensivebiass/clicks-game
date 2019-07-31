@@ -1,35 +1,55 @@
 class ListaElementos extends HTMLElement {
    constructor() {
-      super();
-      
+      super()
+
    }
 
-   connectedCallback(){
-      var casillas = document.getElementById('test').getAttribute('casillas');
-      console.log(casillas);
-      const shadow = this.attachShadow({ mode: 'open' });
-      let winnerNum = Math.floor(Math.random() * casillas) + 1
-      console.log("Winner Number: " + winnerNum)
-      for (let i = 1; i <= casillas; i++) {//cambiar a el attributo
-         const div = document.createElement('div');
-         div.textContent = 'Element ' + i;
-         shadow.appendChild(div);
+   connectedCallback() {
+      this.showPrompt()
+   }
+
+   showPrompt(){
+      var doc = prompt('Ingresa un numero', 
+                '')
+            if (doc != null) { 
+               this.drawDiv(doc)
+            }
+   }
+
+   /*attributeChangedCallback(name, oldValue, newValue) {
+      if (name == 'casillas') {
+         this.drawDiv(newValue)
+      }
+   }*/
+
+   drawDiv(casillas) {
+      const shadow = this.attachShadow({ mode: 'open' })
+      let winnerNum = this.getWinner(casillas)
+      console.log('Winner Number: ' + winnerNum)
+      for (let i = 1; i <= casillas; i++) {
+         const div = document.createElement('div')
+         div.textContent = 'Element ' + i
+         shadow.appendChild(div)
          div.onclick = () => {
-            if(i == winnerNum){
-               div.textContent = "Winner"
+            if (i == winnerNum) {
+               div.textContent = 'Winner'
                div.style.color = 'green'
-            }else{
-               div.textContent = "Loser"
-               div.style.color = "red"
+               this.showPrompt()
+            } else {
+               div.textContent = 'Loser'
+               div.style.color = 'red'
             }
          }
       }
    }
 
-   attributeChangedCallback(name, oldValue, newValue) {
-      console.log('Cambian propiedades', name, oldValue, newValue);
-  }
+   getWinner (casillas) {
+      return Math.floor(Math.random() * casillas) + 1
+   }
 
+   static get observedAttributes() {
+      return ['casillas']
+   }
 }
 
 customElements.define('jofd-loteria', ListaElementos);
